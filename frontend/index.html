@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus Parking Agent</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="container">
+
+        <header>
+        <h1>🚗 Campus Parking Agent</h1>
+        <p>Find, Reserve and Manage Parking Slots with Ease</p>
+        </header>
+        <div class="dashboard">
+
+    <div class="card">
+        <h3>Available</h3>
+        <p id="available-count">0</p>
+    </div>
+
+    <div class="card">
+        <h3>Occupied</h3>
+        <p id="occupied-count">0</p>
+    </div>
+
+    <div class="card">
+        <h3>Reserved</h3>
+        <p id="reserved-count">0</p>
+    </div>
+
+</div>
+
+        <div class="chat-container">
+
+            <div id="chat-box">
+
+            </div>
+
+            <div class="input-area">
+
+                <input
+                    type="text"
+                    id="user-input"
+                    placeholder="Ask something..."
+                >
+
+                <button id="send-btn">
+                    Send
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
+
+</body>
+</html>
