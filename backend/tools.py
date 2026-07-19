@@ -199,6 +199,22 @@ def count_reserved_slots() -> int:
     conn.close()
 
     return count
+def get_reserved_slots():
+    conn = sqlite3.connect(DATABASE)
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "SELECT slot_name FROM parking_slots WHERE status='Reserved'"
+    )
+
+    rows = cursor.fetchall()
+
+    conn.close()
+
+    if not rows:
+        return "No reserved parking slots."
+
+    return "\n".join(row[0] for row in rows)
 
 
 if __name__ == "__main__":
@@ -218,3 +234,28 @@ if __name__ == "__main__":
     print("Database updated successfully!")
 
     conn.close()
+def reset_parking_slots():
+    conn = sqlite3.connect(DATABASE)
+    cursor = conn.cursor()
+
+    # Make all slots Available
+    cursor.execute("UPDATE parking_slots SET status='Available'")
+
+    # Occupied slots
+    cursor.execute("""
+        UPDATE parking_slots
+        SET status='Occupied'
+        WHERE slot_name IN ('A1','A2','A3')
+    """)
+
+    # Reserved slot
+    cursor.execute("""
+        UPDATE parking_slots
+        SET status='Reserved'
+        WHERE slot_name='B1'
+    """)
+
+    conn.commit()
+    conn.close()
+
+    return "Parking slots have been reset successfully."

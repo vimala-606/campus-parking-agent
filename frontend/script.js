@@ -15,28 +15,22 @@ function addMessage(sender, message) {
     messageDiv.style.lineHeight = "1.5";
 
     if (sender === "You") {
-
         messageDiv.style.backgroundColor = "#1565C0";
         messageDiv.style.color = "white";
         messageDiv.style.marginLeft = "auto";
-        messageDiv.style.textAlign = "left";
-
     } else {
-
         messageDiv.style.backgroundColor = "#E3F2FD";
         messageDiv.style.color = "#222";
         messageDiv.style.marginRight = "auto";
-        messageDiv.style.textAlign = "left";
-
     }
 
     messageDiv.innerHTML =
         `<strong>${sender}</strong><br>${String(message).replace(/\n/g, "<br>")}`;
 
     chatBox.appendChild(messageDiv);
-
     chatBox.scrollTop = chatBox.scrollHeight;
 }
+
 async function callAPI(url, options = {}) {
 
     try {
@@ -48,14 +42,15 @@ async function callAPI(url, options = {}) {
     } catch (error) {
 
         console.error(error);
-
         addMessage("Agent", "Unable to connect to the backend.");
-
         return null;
+
     }
+
 }
 
-sendBtn.addEventListener("click", async (event) => {
+sendBtn.addEventListener("click", async function (event) {
+    console.log("Button clicked");
 
     event.preventDefault();
 
@@ -66,6 +61,7 @@ sendBtn.addEventListener("click", async (event) => {
     const msg = message.toLowerCase();
 
     addMessage("You", message);
+    console.log(chatBox.innerHTML);
 
     userInput.value = "";
 
@@ -77,6 +73,7 @@ sendBtn.addEventListener("click", async (event) => {
         if (data)
             addMessage("Agent", data.count);
 
+        loadDashboard();
         return;
     }
 
@@ -88,6 +85,7 @@ sendBtn.addEventListener("click", async (event) => {
         if (data)
             addMessage("Agent", data.slots);
 
+        loadDashboard();
         return;
     }
 
@@ -98,7 +96,21 @@ sendBtn.addEventListener("click", async (event) => {
 
         if (data)
             addMessage("Agent", data.slots);
+        console.log(chatBox.innerHTML);
 
+        loadDashboard();
+        return;
+    }
+
+    // Reserved Slots
+    if (msg.includes("reserved slots")) {
+
+        const data = await callAPI("http://127.0.0.1:8000/reserved-slots");
+
+        if (data)
+            addMessage("Agent", data.slots);
+
+        loadDashboard();
         return;
     }
 
@@ -153,63 +165,77 @@ sendBtn.addEventListener("click", async (event) => {
         if (data)
             addMessage("Agent", data.message);
 
+        loadDashboard();
         return;
     }
 
     // Cancel Reservation
-    if (msg.includes("cancel")) {
+if (msg.includes("cancel")) {
 
-        const slot = message.split(" ").pop().toUpperCase();
+    const slot = message.split(" ").pop().toUpperCase();
+
+    const data = await callAPI(
+        "http://127.0.0.1:8000/cancel-slot",
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                slot_name: slot
+            })
+        }
+    );
+
+    console.log(data);
+
+    if (data) {
+        addMessage("Agent", data.message);
+        await loadDashboard();
+    }
+
+    return;
+}
+
+    // Parking Timings
+    if (msg.includes("timing") || msg.includes("hours")) {
 
         const data = await callAPI(
-            "http://127.0.0.1:8000/cancel-slot",
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    slot_name: slot
-                })
-            }
+            "http://127.0.0.1:8000/parking-timings"
         );
 
         if (data)
-            addMessage("Agent", data.message);
+            addMessage("Agent", data.timings);
 
         return;
     }
-// Parking Timings
-if (msg.includes("timing") || msg.includes("hours")) {
 
-    const data = await callAPI("http://127.0.0.1:8000/parking-timings");
+    // Parking Rules
+    if (msg.includes("rule") || msg.includes("guideline")) {
 
-    if (data)
-        addMessage("Agent", data.timings);
+        const data = await callAPI(
+            "http://127.0.0.1:8000/parking-rules"
+        );
 
-    return;
-}
-// Parking Rules
-if (msg.includes("rule") || msg.includes("guideline")) {
+        if (data)
+            addMessage("Agent", data.rules);
 
-    const data = await callAPI("http://127.0.0.1:8000/parking-rules");
-
-    if (data)
-        addMessage("Agent", data.rules);
-
-    return;
-}
+        return;
+    }
 
     addMessage(
         "Agent",
-        "I can help you with:\n\n" +
-        "• Show available slots\n" +
-        "• Show occupied slots\n" +
-        "• How many slots are available?\n" +
-        "• Status of B1\n" +
-        "• Where is B1?\n" +
-        "• Reserve B1\n" +
-        "• Cancel B1"
+        "I can help you with:<br><br>" +
+        "• Show available slots<br>" +
+        "• Show occupied slots<br>" +
+        "• Show reserved slots<br>" +
+        "• How many slots are available?<br>" +
+        "• Status of A1<br>" +
+        "• Where is A1?<br>" +
+        "• Reserve B1<br>" +
+        "• Cancel B1<br>" +
+        "• Parking timings<br>" +
+        "• Parking rules"
     );
 
 });
@@ -217,22 +243,27 @@ if (msg.includes("rule") || msg.includes("guideline")) {
 userInput.addEventListener("keypress", function (event) {
 
     if (event.key === "Enter") {
-
         sendBtn.click();
-
     }
 
 });
+
 async function loadDashboard() {
 
-    const available = await callAPI("http://127.0.0.1:8000/slot-count");
+    const data = await callAPI("http://127.0.0.1:8000/dashboard");
 
-    if (available) {
+    if (!data) return;
 
-        document.getElementById("available-count").innerText =
-            available.count.match(/\d+/)[0];
+    const availableMatch = String(data.available).match(/\d+/);
 
-    }
+    document.getElementById("available-count").innerText =
+        availableMatch ? availableMatch[0] : "0";
 
+    document.getElementById("occupied-count").innerText =
+        data.occupied;
+
+    document.getElementById("reserved-count").innerText =
+        data.reserved;
 }
+
 loadDashboard();

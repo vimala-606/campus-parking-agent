@@ -3,13 +3,15 @@ from fastapi.middleware.cors import CORSMiddleware
 from backend.tools import (
     get_available_slots,
     get_occupied_slots,
+    get_reserved_slots,
     reserve_slot,
     cancel_reservation,
     check_slot_status,
     get_slot_location,
     count_available_slots,
     count_occupied_slots,
-    count_reserved_slots
+    count_reserved_slots,
+    reset_parking_slots,
 )
 from pydantic import BaseModel
 class SlotRequest(BaseModel):
@@ -106,4 +108,14 @@ def parking_timings():
 Visitor Parking:
 9:00 AM to 5:00 PM
 """
+    }
+@app.get("/reserved-slots")
+def reserved_slots():
+    return {
+        "slots": get_reserved_slots()
+    }
+@app.post("/reset-parking")
+def reset_parking():
+    return {
+        "message": reset_parking_slots()
     }
