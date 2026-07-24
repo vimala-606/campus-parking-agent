@@ -250,7 +250,7 @@ userInput.addEventListener("keypress", function (event) {
 
 async function loadDashboard() {
 
-    const data = await callAPI("http://127.0.0.1:8000/dashboard");
+    const data = await callAPI("https://campus-parking-agent-1.onrender.com/run");
 
     if (!data) return;
 
