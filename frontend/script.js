@@ -68,7 +68,7 @@ sendBtn.addEventListener("click", async function (event) {
     // Count Available Slots
     if (msg.includes("count") || msg.includes("how many")) {
 
-        const data = await callAPI("http://127.0.0.1:8000/slot-count");
+        const data = await callAPI("https://campus-parking-agent-1.onrender.com/slot-count");
 
         if (data)
             addMessage("Agent", data.count);
@@ -80,7 +80,7 @@ sendBtn.addEventListener("click", async function (event) {
     // Available Slots
     if (msg.includes("available")) {
 
-        const data = await callAPI("http://127.0.0.1:8000/available-slots");
+        const data = await callAPI("https://campus-parking-agent-1.onrender.com/available-slots");
 
         if (data)
             addMessage("Agent", data.slots);
@@ -92,7 +92,7 @@ sendBtn.addEventListener("click", async function (event) {
     // Occupied Slots
     if (msg.includes("occupied")) {
 
-        const data = await callAPI("http://127.0.0.1:8000/occupied-slots");
+        const data = await callAPI("https://campus-parking-agent-1.onrender.com/occupied-slots");
 
         if (data)
             addMessage("Agent", data.slots);
@@ -105,7 +105,7 @@ sendBtn.addEventListener("click", async function (event) {
     // Reserved Slots
     if (msg.includes("reserved slots")) {
 
-        const data = await callAPI("http://127.0.0.1:8000/reserved-slots");
+        const data = await callAPI("https://campus-parking-agent-1.onrender.com/reserved-slots");
 
         if (data)
             addMessage("Agent", data.slots);
@@ -120,7 +120,7 @@ sendBtn.addEventListener("click", async function (event) {
         const slot = message.split(" ").pop().toUpperCase();
 
         const data = await callAPI(
-            `http://127.0.0.1:8000/slot-status/${slot}`
+            `https://campus-parking-agent-1.onrender.com/slot-status/${slot}`
         );
 
         if (data)
@@ -135,7 +135,7 @@ sendBtn.addEventListener("click", async function (event) {
         const slot = message.split(" ").pop().toUpperCase();
 
         const data = await callAPI(
-            `http://127.0.0.1:8000/slot-location/${slot}`
+            `https://campus-parking-agent-1.onrender.com/slot-location/${slot}`
         );
 
         if (data)
@@ -150,7 +150,7 @@ sendBtn.addEventListener("click", async function (event) {
         const slot = message.split(" ").pop().toUpperCase();
 
         const data = await callAPI(
-            "http://127.0.0.1:8000/reserve-slot",
+            "https://campus-parking-agent-1.onrender.com/reserve-slot",
             {
                 method: "POST",
                 headers: {
@@ -175,7 +175,7 @@ if (msg.includes("cancel")) {
     const slot = message.split(" ").pop().toUpperCase();
 
     const data = await callAPI(
-        "http://127.0.0.1:8000/cancel-slot",
+        "https://campus-parking-agent-1.onrender.com/cancel-slot",
         {
             method: "POST",
             headers: {
@@ -201,7 +201,7 @@ if (msg.includes("cancel")) {
     if (msg.includes("timing") || msg.includes("hours")) {
 
         const data = await callAPI(
-            "http://127.0.0.1:8000/parking-timings"
+            "https://campus-parking-agent-1.onrender.com/parking-timings"
         );
 
         if (data)
@@ -214,7 +214,7 @@ if (msg.includes("cancel")) {
     if (msg.includes("rule") || msg.includes("guideline")) {
 
         const data = await callAPI(
-            "http://127.0.0.1:8000/parking-rules"
+            "https://campus-parking-agent-1.onrender.com/parking-rules"
         );
 
         if (data)
@@ -250,7 +250,7 @@ userInput.addEventListener("keypress", function (event) {
 
 async function loadDashboard() {
 
-    const data = await callAPI("https://campus-parking-agent-1.onrender.com/run");
+    const data = await callAPI("https://campus-parking-agent-1.onrender.com/dashboard");
 
     if (!data) return;
 
